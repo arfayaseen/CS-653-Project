@@ -26,7 +26,7 @@ def sharpen_image(image_array):
 
 def blur_image(image_array):
     image = Image.fromarray(image_array)
-    blur_image = image.filter(ImageFilter.BoxBlur(radius=0.2))
+    blur_image = image.filter(ImageFilter.BoxBlur(radius=0.05))
     blur_image_array = np.array(blur_image)
     return blur_image_array
 
@@ -83,3 +83,12 @@ def geometric_mean(image, kernel_size):
             filtered_image[i, j] = geom_mean
     
     return filtered_image
+
+def contrast_stretching(image_array):   
+    min_val = np.min(image_array)
+    max_val = np.max(image_array)
+
+    stretched_image = (image_array - min_val) / (max_val - min_val) * 255
+    stretched_image = np.uint8(stretched_image)
+
+    return stretched_image
