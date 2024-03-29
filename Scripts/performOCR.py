@@ -32,9 +32,10 @@ def ocr(image_path, template_array_1, template_array_2):
     denoised_img_array = preprocess15.geometric_mean(sharp_img_array, 3)
     dilated_img_array = preprocess15.dilate_image(denoised_img_array)
     eroded_img_array = preprocess15.erode_image(dilated_img_array)
+    contrasted_img_array = preprocess15.contrast_stretching(eroded_img_array)
 
     # convert to pillow image object
-    input_image = Image.fromarray(eroded_img_array)
+    input_image = Image.fromarray(contrasted_img_array)
     # input_image.show()
     input_image.save('input.bmp')
     print(os.path.basename(image_path))
@@ -85,5 +86,6 @@ for filename in os.listdir(testfiles_dir):
     if filename.endswith('.bmp'):
         image_path = os.path.join(testfiles_dir, filename)
         ocr(image_path, template_array_1, template_array_2)
+
 
 
