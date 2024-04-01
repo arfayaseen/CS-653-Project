@@ -32,9 +32,9 @@ def ocr(image_path, template_array_1, template_array_2):
     # preprocessing
     sharp_img_array = preprocess25.sharpen_image(roi_2)
     denoised_img_array = preprocess25.median_filter(sharp_img_array)
-    dilated_img_array = preprocess25.dilate_image(denoised_img_array)
-    eroded_img_array = preprocess25.erode_image(dilated_img_array)
-    contrasted_img_array = preprocess25.contrast_stretching(eroded_img_array)
+    # dilated_img_array = preprocess25.dilate_image(denoised_img_array)
+    # eroded_img_array = preprocess25.erode_image(dilated_img_array)
+    contrasted_img_array = preprocess25.contrast_stretching(denoised_img_array)
     
     LineSegmentation.segment_lines_of_text(contrasted_img_array)
 

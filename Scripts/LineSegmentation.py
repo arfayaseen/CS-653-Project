@@ -12,7 +12,8 @@ def find_clusters(peaks):
         else:
             clusters.append(cluster)
             cluster = [peaks[i]]
-    clusters.append(cluster)
+    if len(cluster) >= 10:
+        clusters.append(cluster)
     return clusters
 
 def crop_image_by_clusters(image, clusters):
@@ -30,10 +31,11 @@ def crop_image_by_clusters(image, clusters):
     return cropped_images
 
 def segment_lines_of_text(image_array):
-    row_sum = np.sum(image_array, axis=1)
+    whitey_img_array = increase_contrast(image_array)
+    row_sum = np.sum(whitey_img_array, axis=1)
     row_sum_normalized = row_sum / np.max(row_sum) * 255
     
-    threshold = 202
+    threshold = 200
     peaks = np.where(row_sum_normalized > threshold)[0]
     # print(peaks)
     clusters = find_clusters(peaks)
@@ -41,6 +43,7 @@ def segment_lines_of_text(image_array):
 
     image = Image.fromarray(image_array)
     cropped_images = crop_image_by_clusters(image, clusters)
+    print(len(cropped_images))
 
     i=1
     cropped_images_dir = './cropped_images_for_ocr/'
@@ -63,3 +66,8 @@ def unique_values(d):
     # print(new_dict)
     # print(seen_values)
     return new_dict
+
+def increase_contrast(image_array):
+    contrast_increased_image = np.copy(image_array)
+    contrast_increased_image[contrast_increased_image > 205] = 255
+    return contrast_increased_image
