@@ -60,7 +60,6 @@ def ocr(image_path):
         while it.Next(tesserocr.RIL.SYMBOL):
             bbox = it.BoundingBox(tesserocr.RIL.SYMBOL)
             draw.rectangle(bbox, outline='black')
-
         # save the image with bounding boxes
         bboxed_images_dir = './bboxed_images_set-15/latest_ocr'
         if not os.path.exists(bboxed_images_dir):
@@ -68,4 +67,12 @@ def ocr(image_path):
         bboxed_image_path = os.path.join(bboxed_images_dir, 'bboxed_' + os.path.basename(image_path))
         image_for_analysis.save(bboxed_image_path)
     print(ocr_result)
-    return ocr_result
+    processed_images = [
+        gray_img_array,
+        preprocess15.sharpen_image(roi_2),
+        preprocess15.geometric_mean(sharp_img_array, 3),
+        preprocess15.dilate_image(denoised_img_array),
+        preprocess15.erode_image(dilated_img_array),
+        preprocess15.contrast_stretching(eroded_img_array)
+    ]
+    return ocr_result, processed_images
