@@ -3,8 +3,10 @@ import numpy as np
 from PIL import Image, ImageDraw
 import os
 import preprocess15
+from scipy.ndimage import generic_filter
 
-def ocr(image_path, template_array_1, template_array_2):
+
+def ocr(image_path, template_array_1, template_array_2, allowed_chars):
     image = Image.open(image_path)
     image_array = np.array(image)
     gray_img_array = preprocess15.rgb_to_grayscale(image_array)
@@ -32,21 +34,22 @@ def ocr(image_path, template_array_1, template_array_2):
     denoised_img_array = preprocess15.geometric_mean(sharp_img_array, 3)
     dilated_img_array = preprocess15.dilate_image(denoised_img_array)
     eroded_img_array = preprocess15.erode_image(dilated_img_array)
-    contrasted_img_array = preprocess15.contrast_stretching(eroded_img_array)
 
     # convert to pillow image object
-    input_image = Image.fromarray(contrasted_img_array)
+    input_image = Image.fromarray(eroded_img_array)
     # input_image.show()
     input_image.save('input.bmp')
     print(os.path.basename(image_path))
 
     with tesserocr.PyTessBaseAPI(psm=6, lang='alp_num', oem=3) as api:
+        api.SetVariable("tessedit_char_whitelist", allowed_chars)
         api.SetImageFile('input.bmp')
+        
         ocr_result = api.GetUTF8Text()
         print(ocr_result)
 
         # save result in .txt file
-        text_files_dir = './AccuracyMeasure/outputs-set-15/'
+        text_files_dir = './AccuracyMeasure/outputs-set-30/'
         if not os.path.exists(text_files_dir):
             os.makedirs(text_files_dir)
 
@@ -70,6 +73,7 @@ def ocr(image_path, template_array_1, template_array_2):
         bboxed_image_path = os.path.join(bboxed_images_dir, 'bboxed_' + os.path.basename(image_path))
         image_for_analysis.save(bboxed_image_path)
 
+        
 # load the template for template matching
 template_dir = "./templates/"
 template_1_path = os.path.join(template_dir, "template_1.bmp")
@@ -78,14 +82,16 @@ template_1 = Image.open(template_1_path)
 template_2 = Image.open(template_2_path)
 template_array_1 = np.array(template_1)
 template_array_2 = np.array(template_2)
+allowed_chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz:.=+ '
 
-testfiles_dir = "./AccuracyMeasure/inputs/"
+testfiles_dir = "./AccuracyMeasure/inputs/" # "../../10gBoxes_15-03-2023/OK"
+# "./AccuracyMeasure/inputs/" 
 
 # perform ocr on each image in the directory
 for filename in os.listdir(testfiles_dir):
     if filename.endswith('.bmp'):
         image_path = os.path.join(testfiles_dir, filename)
-        ocr(image_path, template_array_1, template_array_2)
+        ocr(image_path, template_array_1, template_array_2, allowed_chars)
 
 
 
