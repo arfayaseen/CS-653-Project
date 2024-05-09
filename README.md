@@ -1,3 +1,5 @@
+# OCR on Industrial Packages
+
 Unzip the "all ground truths" folder to access the ground truth data corresponding to each image in the dataset. Each text file within this folder is named after its corresponding image.
 
 Next, open the performOCR.py file and verify the following settings:
@@ -12,19 +14,7 @@ Subsequently, open the calculateCER.py file. Here, update the following settings
 
 1. Set the ground_truth_dir variable to the directory where you extracted the ground truths in the initial step.
 2. Set the output_dir variable to the directory containing the OCR results obtained from running the performOCR.py file.
-3. Execute the calculateCER.py file. It will provide the number of images falling within the accuracy ranges defined by the table below:
-
-
-Accuracy Range (%)     Number of Images
-100 
-95-100 
-90-95 
-80-90 
-70-80 
-60-70 
-50-60 
-0-50 
-
+3. Execute the calculateCER.py file. It will provide the number of images falling within the different accuracy ranges.
 
 Please note that we are using a custom-trained model for this project. The required files, named 'alp_num.traineddata' and 'alp_num-v2.traineddata', are included in the "Trained Model" directory. Either one of these files need to be placed in the following directory, which may vary depending on the drive where you installed Tesseract:
 "C:\Program Files\Tesseract-OCR\tessdata"
